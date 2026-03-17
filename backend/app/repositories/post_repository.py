@@ -2,7 +2,7 @@ from typing import Optional, List, Tuple
 
 from sqlalchemy import func
 from app.db.database import SessionLocal
-from app.db.models import Post, User
+from app.db.models import Post, User, Like
 
 class PostRepository:
     @staticmethod
@@ -79,7 +79,9 @@ class PostRepository:
                 Post.title,
                 Post.content,
                 Post.created_at,
-                User.login.label("author_name")
+                User.login.label("author_name"),
+                Post.likes_count,
+                Post.comments_count
             ).join(User, Post.author_id == User.id).order_by(Post.created_at.desc()).offset(offset).limit(page_size)
 
             posts = [tuple(row) for row in posts_query.all()]

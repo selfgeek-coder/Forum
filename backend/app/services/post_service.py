@@ -105,13 +105,15 @@ class PostService:
         
         news_list = []
         for post in posts:
-            post_id, title, content, created_at, author_name = post
+            post_id, title, content, created_at, author_name, likes_count, comments_count = post
             news_list.append({
                 "id": post_id,
                 "title": title,
                 "content": content,
                 "created_at": created_at,
-                "author_name": author_name
+                "author_name": author_name,
+                "likes_count": likes_count,
+                "comments_count": comments_count
             })
         
         return {

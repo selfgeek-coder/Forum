@@ -133,3 +133,22 @@ class CommentResponse(CommentBase):
 
     class Config:
         from_attributes = True
+
+
+# --- LIKES ---
+class LikeCreate(BaseModel):
+    post_id: int
+
+
+class LikeDelete(BaseModel):
+    post_id: int
+
+
+class LikeResponse(BaseModel):
+    id: int
+    user_id: int
+    post_id: int
+    created_at: str
+
+    class Config:
+        from_attributes = True

@@ -14,6 +14,11 @@ class CommentRepository:
         try:
             comment = Comment(content=content, post_id=post_id, user_id=user_id)
             db.add(comment)
+
+            post = db.query(Post).filter(Post.id == post_id).first()
+            if post:
+                post.comments_count += 1
+            
             db.commit()
             db.refresh(comment)
             return comment.id
@@ -56,7 +61,13 @@ class CommentRepository:
         try:
             comment = db.query(Comment).filter(Comment.id == comment_id).first()
             if comment:
+                post_id = comment.post_id
                 db.delete(comment)
+                
+                post = db.query(Post).filter(Post.id == post_id).first()
+                if post and post.comments_count > 0:
+                    post.comments_count -= 1
+                
                 db.commit()
                 return True
             return False
