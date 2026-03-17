@@ -13,7 +13,7 @@ auth_service = AuthService(user_repository)
 @router.post("/register")
 def api_register(user: UserRegister):
     try:
-        result = auth_service.register_user(user.email, user.login, user.password)
+        result = auth_service.register_user(user.email, user.login, user.name, user.password)
         
         return {
             "success": True,

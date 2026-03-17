@@ -11,7 +11,7 @@ class AuthService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
     
-    def register_user(self, email: str, login: str, password: str):
+    def register_user(self, email: str, login: str, name: str, password: str):
         """Зарегистрировать нового пользователя"""
 
         if self.user_repository.check_email_exists(email):
@@ -25,7 +25,7 @@ class AuthService:
         
         hashed_password = ph.hash(password)
         
-        user_id = self.user_repository.create_user(email, login, hashed_password)
+        user_id = self.user_repository.create_user(email, login, name, hashed_password)
         
         access_token = create_access_token(
             data={"sub": email, "user_id": user_id, "name": login}

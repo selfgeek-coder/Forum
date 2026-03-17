@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr, field_validator, Field, constr
 class UserRegister(BaseModel):
     email: EmailStr
     login: str
+    name: str
     password: str
 
     @field_validator('login')

@@ -1,39 +1,46 @@
 from typing import Optional, Tuple
 
-from app.database import get_db_connection
+from sqlalchemy import select
+from app.db.database import SessionLocal, get_db
+from app.db.models import User
 
 class UserRepository:
     @staticmethod
     def get_user_by_email(email: str) -> Optional[Tuple]:
         """Получить пользователя по email"""
         
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, login, email, password FROM users WHERE email = ?", 
-                (email,)
-            )
-            return cursor.fetchone()
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == email).first()
+            if user:
+                return (user.id, user.login, user.email, user.password)
+            return None
+        finally:
+            db.close()
     
-    @staticmethod
-    def create_user(email: str, login: str, hashed_password: str) -> int:
-        """Создать нового пользователя"""
-
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO users (email, login, password) VALUES (?, ?, ?)",
-                (email, login, hashed_password)
-            )
-            user_id = cursor.lastrowid
-            conn.commit()
-            return user_id
     
     @staticmethod
     def check_email_exists(email: str) -> bool:
         """Проверить существование email"""
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
-            return cursor.fetchone() is not None
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == email).first()
+            return user is not None
+        finally:
+            db.close()
+    
+    
+    @staticmethod
+    def create_user(email: str, login: str, name: str,  hashed_password: str) -> int:
+        """Создать нового пользователя"""
+
+        db = SessionLocal()
+        try:
+            user = User(email=email, login=login, name=name, password=hashed_password)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return user.id
+        finally:
+            db.close()

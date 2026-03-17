@@ -1,78 +1,88 @@
 from typing import Optional, List, Tuple
 
-from app.database import get_db_connection
+from sqlalchemy import func
+from app.db.database import SessionLocal
+from app.db.models import Post, User
 
 class PostRepository:
     @staticmethod
     def create_post(title: str, content: str, author_id: int) -> int:
         """Создать новый пост"""
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)",
-                (title, content, author_id)
-            )
-            post_id = cursor.lastrowid
-            conn.commit()
-            return post_id
+        db = SessionLocal()
+        try:
+            post = Post(title=title, content=content, author_id=author_id)
+            db.add(post)
+            db.commit()
+            db.refresh(post)
+            return post.id
+        finally:
+            db.close()
     
     @staticmethod
     def get_post_by_id(post_id: int) -> Optional[Tuple]:
         """Получить пост по post_id: int"""
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, title, content, author_id FROM posts WHERE id = ?",
-                (post_id,)
-            )
-            return cursor.fetchone()
+        db = SessionLocal()
+        try:
+            post = db.query(Post).filter(Post.id == post_id).first()
+            if post:
+                return (post.id, post.title, post.content, post.author_id)
+            return None
+        finally:
+            db.close()
     
     @staticmethod
     def update_post(post_id: int, title: str, content: str) -> bool:
         """Обновить пост"""
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """UPDATE posts 
-                SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP 
-                WHERE id = ?""",
-                (title, content, post_id)
-            )
-            conn.commit()
-            return cursor.rowcount > 0
+        db = SessionLocal()
+        try:
+            post = db.query(Post).filter(Post.id == post_id).first()
+            if post:
+                post.title = title
+                post.content = content
+                db.commit()
+                return True
+            return False
+        finally:
+            db.close()
     
     @staticmethod
     def delete_post(post_id: int) -> bool:
         """Удалить пост"""
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM posts WHERE id = ?", (post_id,))
-            conn.commit()
-            return cursor.rowcount > 0
+        db = SessionLocal()
+        try:
+            post = db.query(Post).filter(Post.id == post_id).first()
+            if post:
+                db.delete(post)
+                db.commit()
+                return True
+            return False
+        finally:
+            db.close()
     
     @staticmethod
     def get_posts_paginated(page: int, page_size: int) -> Tuple[List[Tuple], int, int]:
         """Получить посты с пагинацией"""
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
+        db = SessionLocal()
+        try:
             offset = (page - 1) * page_size
 
-            cursor.execute("SELECT COUNT(*) FROM posts")
-            total_posts = cursor.fetchone()[0]
+            total_posts = db.query(func.count(Post.id)).scalar()
             total_pages = (total_posts + page_size - 1) // page_size
 
-            cursor.execute('''
-                SELECT p.id, p.title, p.content, p.created_at, u.login as author_name
-                FROM posts p
-                JOIN users u ON p.author_id = u.id
-                ORDER BY p.created_at DESC
-                LIMIT ? OFFSET ?
-            ''', (page_size, offset))
-            
-            posts = cursor.fetchall()
+            posts_query = db.query(
+                Post.id,
+                Post.title,
+                Post.content,
+                Post.created_at,
+                User.login.label("author_name")
+            ).join(User, Post.author_id == User.id).order_by(Post.created_at.desc()).offset(offset).limit(page_size)
+
+            posts = [tuple(row) for row in posts_query.all()]
             return posts, total_posts, total_pages
+        finally:
+            db.close()
