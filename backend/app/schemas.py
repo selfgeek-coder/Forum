@@ -92,3 +92,44 @@ class PostEdit(PostBase):
 
 class PostDelete(BaseModel):
     post_id: int
+
+
+# --- COMMENTS CRUD ---
+class CommentBase(BaseModel):
+    content: str = Field(..., min_length=1, max_length=5000, description="Текст комментария")
+
+    @field_validator('content')
+    @classmethod
+    def validate_content(cls, v: str) -> str:
+        v = v.strip()
+
+        if not v:
+            raise ValueError('Комментарий не может быть пустым.')
+
+        if len(v) < 3:
+            raise ValueError('Комментарий должен быть не менее 3 символов.')
+
+        return v
+
+
+class CommentCreate(CommentBase):
+    post_id: int
+
+
+class CommentEdit(CommentBase):
+    comment_id: int
+
+
+class CommentDelete(BaseModel):
+    comment_id: int
+
+
+class CommentResponse(CommentBase):
+    id: int
+    post_id: int
+    user_id: int
+    created_at: str
+    updated_at: str
+
+    class Config:
+        from_attributes = True
