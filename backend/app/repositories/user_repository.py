@@ -29,6 +29,17 @@ class UserRepository:
             return user is not None
         finally:
             db.close()
+            
+    @staticmethod
+    def check_login_exists(login: str) -> bool:
+        """Проверить существование login"""
+
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.login == login).first()
+            return user is not None
+        finally:
+            db.close()
     
     
     @staticmethod
