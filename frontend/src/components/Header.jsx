@@ -14,30 +14,32 @@ export default function Header() {
 
     return (
         <header className="app-header">
-            <div className="header-left">
-                <h1 className="header-logo" onClick={() => navigate("/")}>
-                    Мой Форум
-                </h1>
-            </div>
-            <div className="header-right">
-                {login ? (
-                    <>
-                        <span className="header-user">Привет, {login}</span>
-                        <button
-                            className="header-create"
-                            onClick={() => navigate("/create-post")}
-                        >
-                            Создать пост
+            <div className="container app-header__inner">
+                <div className="header-left">
+                    <h1 className="header-logo" onClick={() => navigate("/")}>
+                        Форум
+                    </h1>
+                </div>
+                <div className="header-right">
+                    {login ? (
+                        <>
+                            <span className="header-user">{login}</span>
+                            <button
+                                className="header-create"
+                                onClick={() => navigate("/?create=1")}
+                            >
+                                Создать пост
+                            </button>
+                            <button className="header-logout" onClick={handleLogout}>
+                                Выйти
+                            </button>
+                        </>
+                    ) : (
+                        <button className="header-login" onClick={() => navigate("/login")}>
+                            Войти
                         </button>
-                        <button className="header-logout" onClick={handleLogout}>
-                            Выйти
-                        </button>
-                    </>
-                ) : (
-                    <button className="header-login" onClick={() => navigate("/login")}>
-                        Войти
-                    </button>
-                )}
+                    )}
+                </div>
             </div>
         </header>
     );

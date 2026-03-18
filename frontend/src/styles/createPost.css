@@ -1,54 +1,64 @@
 .create-post-page {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    font-family: Arial, sans-serif;
+  max-width: 300px;
+  margin: 30px auto;
+  padding: 16px;
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-radius-xl);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface);
+  box-shadow: var(--md-elevation-2);
 }
 
 .create-post-page h2 {
-    margin-bottom: 15px;
-    color: #4a90e2;
+  margin-bottom: 1px;
+  color: var(--md-sys-color-on-surface);
 }
 
 .create-post-input,
 .create-post-textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-    resize: vertical;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: var(--md-radius-lg);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  font-size: 1em;
+  resize: vertical;
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+  outline: none;
+}
+
+.create-post-input:focus,
+.create-post-textarea:focus {
+  border-color: var(--md-sys-color-primary);
 }
 
 .create-post-textarea {
-    min-height: 120px;
+  resize: none;
+  min-height: 120px;
 }
 
 .create-post-button {
-    padding: 10px 20px;
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
+  padding: 10px 20px;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
 }
 
 .create-post-button:hover:not(:disabled) {
-    background-color: #357ab7;
+  filter: brightness(0.97);
 }
 
 .create-post-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .create-post-error {
-    color: red;
-    margin-bottom: 10px;
+  color: var(--md-sys-color-error);
+  margin-bottom: 10px;
 }

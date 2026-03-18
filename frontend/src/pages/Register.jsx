@@ -56,14 +56,14 @@ export default function Register() {
 
                 <input 
                     className="auth-input" 
-                    placeholder="Login"
+                    placeholder="Логин"
                     value={form.login}
                     onChange={(e) => setForm({...form, login: e.target.value})} 
                 />
 
                 <input 
                     className="auth-input" 
-                    placeholder="Name"
+                    placeholder="Имя"
                     value={form.name}
                     onChange={(e) => setForm({...form, name: e.target.value})} 
                 />
@@ -71,7 +71,7 @@ export default function Register() {
                 <input 
                     type="password" 
                     className="auth-input" 
-                    placeholder="Password"
+                    placeholder="Пароль"
                     value={form.password}
                     onChange={(e) => setForm({...form, password: e.target.value})} 
                 />

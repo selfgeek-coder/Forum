@@ -2,6 +2,8 @@ import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/createPost.css";
+import { formatApiError } from "../utils/apiError";
+import { capitalizeFirstLetter } from "../utils/text";
 
 export default function CreatePost() {
     const [title, setTitle] = useState("");
@@ -21,13 +23,14 @@ export default function CreatePost() {
         setError("");
 
         try {
-            await api.post("/post/create", { title, content });
+            const normalizedTitle = capitalizeFirstLetter(title.trim());
+            await api.post("/post/create", { title: normalizedTitle, content });
             alert("Пост успешно создан!");
             setTitle("");
             setContent("");
-            navigate("/"); // можно оставить, чтобы вернуться на главную
+            navigate("/");
         } catch (err) {
-            setError("Ошибка при создании поста.");
+            setError(formatApiError(err, "Ошибка при создании поста."));
         } finally {
             setLoading(false);
         }
@@ -41,7 +44,7 @@ export default function CreatePost() {
                 className="create-post-input"
                 placeholder="Заголовок"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => setTitle(capitalizeFirstLetter(e.target.value))}
             />
 
             <textarea

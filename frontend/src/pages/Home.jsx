@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../api/axios";
 import Header from "../components/Header";
+import PostCard from "../components/PostCard";
+import CreatePostModal from "../components/CreatePostModal";
+import { useSearchParams } from "react-router-dom";
+import { getAuthInfo } from "../utils/jwt";
 import "../styles/home.css";
 
 export default function Home() {
@@ -9,6 +13,10 @@ export default function Home() {
     const [error, setError] = useState("");
     const [page, setPage] = useState(1);
     const [hasNext, setHasNext] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const auth = useMemo(() => getAuthInfo(), [searchParams]);
+    const createOpen = searchParams.get("create") === "1";
 
     const fetchNews = async (pageNumber = 1) => {
         setLoading(true);
@@ -31,41 +39,73 @@ export default function Home() {
         fetchNews(page);
     }, [page]);
 
+    const handleCloseCreate = () => {
+        const next = new URLSearchParams(searchParams);
+        next.delete("create");
+        setSearchParams(next, { replace: true });
+    };
+
+    const handleCreated = () => {
+        setPage(1);
+        fetchNews(1);
+    };
+
+    const handleDeleted = (postId) => {
+        setNews((prev) => prev.filter((p) => p.id !== postId));
+    };
+
     return (
-        <div className="home-page">
+        <div className="app-shell">
             <Header />
 
-            {loading && <p>Загрузка новостей...</p>}
-            {error && <p className="error">{error}</p>}
-
-            <div className="news-list">
-                {news.map((post) => (
-                    <div key={post.id} className="news-card">
-                        <h3>{post.title}</h3>
-                        <p>{post.content}</p>
-                        <div className="news-footer">
-                            <span>Автор: {post.author}</span>
-                            <span>❤️ {post.likes_count} 💬 {post.comments_count}</span>
+            <main className="container">
+                <section className="news-surface">
+                    <div className="page-header">
+                        <div>
+                            <h2 className="page-title">Новости</h2>
+                            <div className="page-subtitle">Лента свежих постов сообщества</div>
                         </div>
                     </div>
-                ))}
-            </div>
 
-            <div className="pagination">
-                <button
-                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={page === 1}
-                >
-                    Назад
-                </button>
-                <span>Страница {page}</span>
-                <button
-                    onClick={() => hasNext && setPage((prev) => prev + 1)}
-                    disabled={!hasNext}
-                >
-                    Далее
-                </button>
-            </div>
+                    {loading && <div className="muted">Загрузка новостей...</div>}
+                    {error && <div className="alert alert--error">{error}</div>}
+
+                    <div className="news-list">
+                        {news.map((post) => (
+                            <PostCard
+                                key={post.id}
+                                post={post}
+                                auth={auth}
+                                onDeleted={handleDeleted}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="pagination">
+                        <button
+                            className="btn btn--secondary"
+                            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={page === 1}
+                        >
+                            Назад
+                        </button>
+                        <span className="muted">Страница {page}</span>
+                        <button
+                            className="btn btn--secondary"
+                            onClick={() => hasNext && setPage((prev) => prev + 1)}
+                            disabled={!hasNext}
+                        >
+                            Далее
+                        </button>
+                    </div>
+                </section>
+            </main>
+
+            <CreatePostModal
+                open={createOpen && auth.isAuthenticated}
+                onClose={handleCloseCreate}
+                onCreated={handleCreated}
+            />
         </div>
     );
 }
