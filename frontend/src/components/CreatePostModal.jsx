@@ -1,38 +1,36 @@
-import React, { useMemo, useState } from "react";
-import api from "../api/axios";
+import React, { useMemo } from "react";
 import Modal from "./Modal";
-import { formatApiError } from "../utils/apiError";
+import { useForm } from "../hooks/useForm";
+import { PostService } from "../services/postService";
 import { capitalizeFirstLetter } from "../utils/text";
 
 export default function CreatePostModal({ open, onClose, onCreated }) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const canSubmit = useMemo(() => title.trim().length > 0 && content.trim().length > 0, [title, content]);
-
-  const handleCreate = async () => {
-    if (!canSubmit) {
-      setError("Введите заголовок и текст поста.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
+  const onSubmit = async (values) => {
     try {
-      const normalizedTitle = capitalizeFirstLetter(title.trim());
-      await api.post("/post/create", { title: normalizedTitle, content });
-      setTitle("");
-      setContent("");
+      await PostService.create({
+        title: capitalizeFirstLetter(values.title.trim()),
+        content: values.content.trim(),
+      });
+      setValues({ title: "", content: "" });
       onCreated?.();
       onClose?.();
     } catch (err) {
-      setError(formatApiError(err, "Ошибка при создании поста."));
-    } finally {
-      setLoading(false);
+      setErrors({ submit: "Ошибка при создании поста" });
     }
   };
+
+  const { values, errors, handleChange, handleSubmit, setValues, setErrors } = useForm(
+    { title: "", content: "" },
+    onSubmit,
+    (vals) => {
+      const errs = {};
+      if (!vals.title.trim()) errs.title = "Введите заголовок";
+      if (!vals.content.trim()) errs.content = "Введите текст";
+      return errs;
+    }
+  );
+
+  const canSubmit = useMemo(() => values.title.trim() && values.content.trim(), [values]);
 
   return (
     <Modal
@@ -41,38 +39,39 @@ export default function CreatePostModal({ open, onClose, onCreated }) {
       onClose={onClose}
       footer={
         <div className="md-modal__actions">
-          <button className="btn btn--secondary" onClick={onClose} disabled={loading}>
-            Отмена
-          </button>
-          <button className="btn btn--primary" onClick={handleCreate} disabled={loading || !canSubmit}>
-            {loading ? "Создание..." : "Создать"}
+          <button className="btn btn--secondary" onClick={onClose} disabled={false}>Отмена</button>
+          <button className="btn btn--primary" onClick={handleSubmit} disabled={!canSubmit}>
+            Создать
           </button>
         </div>
       }
     >
-      {error ? <div className="alert alert--error">{error}</div> : null}
+      {errors.submit && <div className="alert alert--error">{errors.submit}</div>}
 
       <div className="md-field">
         <label className="md-label">Заголовок</label>
         <input
           className="md-input"
-          value={title}
-          onChange={(e) => setTitle(capitalizeFirstLetter(e.target.value))}
+          name="title"
+          value={values.title}
+          onChange={handleChange}
           placeholder="Например: Обновление проекта"
         />
+        {errors.title && <small className="md-error">{errors.title}</small>}
       </div>
 
       <div className="md-field">
         <label className="md-label">Текст</label>
         <textarea
           className="md-textarea"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          name="content"
+          value={values.content}
+          onChange={handleChange}
           placeholder="Напишите, что нового…"
           rows={6}
         />
+        {errors.content && <small className="md-error">{errors.content}</small>}
       </div>
     </Modal>
   );
 }
-

@@ -124,18 +124,7 @@ body {
   padding: 10px 16px;
   border-radius: 999px;
   cursor: pointer;
-  transition:
-    transform 0.06s ease,
-    background 0.12s ease,
-    box-shadow 0.12s ease;
-}
-
-.btn:hover:not(:disabled) {
-  background: rgba(29, 27, 32, 0.06);
-}
-
-.btn:active:not(:disabled) {
-  transform: translateY(1px);
+  transition: 0.1s ease;
 }
 
 .btn:disabled {
@@ -146,21 +135,11 @@ body {
 .btn--primary {
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
-  box-shadow: var(--md-elevation-1);
-}
-
-.btn--primary:hover:not(:disabled) {
-  filter: brightness(0.97);
 }
 
 .btn--secondary {
   background: var(--md-sys-color-secondary-container);
   color: var(--md-sys-color-on-secondary-container);
-  box-shadow: var(--md-elevation-1);
-}
-
-.btn--secondary:hover:not(:disabled) {
-  filter: brightness(0.985);
 }
 
 .md-text-btn {

@@ -74,31 +74,28 @@
 }
 
 .action-btn {
-  border: 1px solid var(--md-sys-color-outline-variant);
-  background: var(--md-sys-color-surface-container);
-  color: var(--md-sys-color-on-surface);
+  border: none;
   padding: 8px 12px;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: var(--md-space-2);
+  background: transparent;
 }
 
-.action-btn .material-symbols-outlined {
+/* .action-btn .material-symbols-outlined {
   font-size: 18px;
   line-height: 1;
-}
+} */
 
 .action-btn:hover {
   background: var(--md-sys-color-surface-container-high);
-  border-color: var(--md-sys-color-outline);
 }
 
 .action-btn.liked {
-  border-color: rgba(103, 80, 164, 0.40);
-  background: rgba(103, 80, 164, 0.10);
+  background: rgba(255, 0, 0, 0.1);
 }
 
 .comments-section {
