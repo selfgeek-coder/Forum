@@ -112,3 +112,21 @@ class CommentRepository:
             return post is not None
         finally:
             db.close()
+
+    @staticmethod
+    def get_comment_with_author(comment_id: int) -> Optional[Tuple]:
+        """Получить комментарий с автором (для ответа сразу после создания)."""
+        db = SessionLocal()
+        try:
+            row = db.query(
+                Comment.id,
+                Comment.content,
+                Comment.post_id,
+                Comment.user_id,
+                Comment.created_at,
+                Comment.updated_at,
+                User.login.label("author_name"),
+            ).join(User, Comment.user_id == User.id).filter(Comment.id == comment_id).first()
+            return tuple(row) if row else None
+        finally:
+            db.close()

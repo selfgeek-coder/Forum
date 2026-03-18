@@ -80,11 +80,28 @@ class PostRepository:
                 Post.content,
                 Post.created_at,
                 User.login.label("author_name"),
+                Post.author_id,
                 Post.likes_count,
                 Post.comments_count
             ).join(User, Post.author_id == User.id).order_by(Post.created_at.desc()).offset(offset).limit(page_size)
 
             posts = [tuple(row) for row in posts_query.all()]
             return posts, total_posts, total_pages
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_user_liked_post_ids(user_id: int, post_ids: List[int]) -> set[int]:
+        """Вернуть set post_id, которые пользователь лайкнул (для списка постов)."""
+        if not post_ids:
+            return set()
+
+        db = SessionLocal()
+        try:
+            rows = db.query(Like.post_id).filter(
+                Like.user_id == user_id,
+                Like.post_id.in_(post_ids),
+            ).all()
+            return {row[0] for row in rows}
         finally:
             db.close()

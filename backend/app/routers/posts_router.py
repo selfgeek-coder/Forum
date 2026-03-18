@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Query
 
 from app.schemas import PostCreate, PostDelete, PostEdit
-from app.security import verify_token
+from app.security import verify_token, verify_token_optional
 from app.repositories.post_repository import PostRepository
 from app.services.post_service import PostService
 
@@ -88,7 +88,11 @@ def delete_post(post: PostDelete, current_user: dict = Depends(verify_token)):
 
 @router.get("/news")
 @router.get("/news/{page}")
-def get_news(page: int = 1, page_size: int = Query(default=10, ge=1, le=50)):
+def get_news(
+    page: int = 1,
+    page_size: int = Query(default=10, ge=1, le=50),
+    current_user: dict | None = Depends(verify_token_optional),
+):
     """
     page: номер страницы (начинается с 1)
     page_size: количество постов на странице (по умолчанию 10 максимум 50)
@@ -98,7 +102,8 @@ def get_news(page: int = 1, page_size: int = Query(default=10, ge=1, le=50)):
         page = 1
 
     try:
-        result = post_service.get_news(page, page_size)
+        current_user_id = current_user.get("user_id") if current_user else None
+        result = post_service.get_news(page, page_size, current_user_id=current_user_id)
         
         return {
             "success": True,

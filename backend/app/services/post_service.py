@@ -96,24 +96,32 @@ class PostService:
             "post_id": post_id
         }
     
-    def get_news(self, page: int, page_size: int):
+    def get_news(self, page: int, page_size: int, current_user_id: int | None = None):
         """Получить новости с пагинацией"""
 
         posts, total_posts, total_pages = self.post_repository.get_posts_paginated(
             page, page_size
         )
+
+        liked_post_ids: set[int] = set()
+        if current_user_id is not None:
+            post_ids = [p[0] for p in posts]
+            liked_post_ids = self.post_repository.get_user_liked_post_ids(current_user_id, post_ids)
         
         news_list = []
         for post in posts:
-            post_id, title, content, created_at, author_name, likes_count, comments_count = post
+            post_id, title, content, created_at, author_name, author_id, likes_count, comments_count = post
             news_list.append({
                 "id": post_id,
                 "title": title,
                 "content": content,
                 "created_at": created_at,
-                "author_name": author_name,
+                "author": author_name,
+                "author_id": author_id,
                 "likes_count": likes_count,
-                "comments_count": comments_count
+                "comments_count": comments_count,
+                "is_liked": post_id in liked_post_ids,
+                "comments": []
             })
         
         return {

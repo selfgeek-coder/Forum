@@ -20,12 +20,26 @@ class CommentService:
             )
 
         comment_id = self.comment_repository.create_comment(content, post_id, user_id)
+        created = self.comment_repository.get_comment_with_author(comment_id)
+        if not created:
+            return {
+                "id": comment_id,
+                "content": content,
+                "post_id": post_id,
+                "user_id": user_id,
+                "created_at": "",
+                "updated_at": "",
+                "author_login": "",
+            }
 
         return {
-            "comment_id": comment_id,
-            "content": content,
-            "post_id": post_id,
-            "user_id": user_id
+            "id": created[0],
+            "content": created[1],
+            "post_id": created[2],
+            "user_id": created[3],
+            "created_at": str(created[4]),
+            "updated_at": str(created[5]),
+            "author_login": created[6],
         }
 
     def update_comment(self, comment_id: int, content: str, current_user_id: int):
