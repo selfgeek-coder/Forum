@@ -120,3 +120,23 @@ def get_news(
                 "message": "Ошибка базы данных при получении новостей"
             }
         )
+
+
+@router.get("/{post_id}")
+def get_post(post_id: int, current_user: dict | None = Depends(verify_token_optional)):
+    """Получить пост по ID (публично)."""
+    try:
+        current_user_id = current_user.get("user_id") if current_user else None
+        result = post_service.get_post(post_id, current_user_id=current_user_id)
+        return {"success": True, "data": result}
+        
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={
+                "error": "DATABASE_ERROR",
+                "message": "Ошибка базы данных при получении поста"
+            }
+        )

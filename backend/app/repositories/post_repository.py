@@ -79,7 +79,7 @@ class PostRepository:
                 Post.title,
                 Post.content,
                 Post.created_at,
-                User.login.label("author_name"),
+                User.name.label("author_name"),
                 Post.author_id,
                 Post.likes_count,
                 Post.comments_count
@@ -103,5 +103,24 @@ class PostRepository:
                 Like.post_id.in_(post_ids),
             ).all()
             return {row[0] for row in rows}
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_post_details(post_id: int) -> Optional[Tuple]:
+        """Получить детали поста (с автором и счетчиками)."""
+        db = SessionLocal()
+        try:
+            row = db.query(
+                Post.id,
+                Post.title,
+                Post.content,
+                Post.created_at,
+                User.name.label("author_name"),
+                Post.author_id,
+                Post.likes_count,
+                Post.comments_count,
+            ).join(User, Post.author_id == User.id).filter(Post.id == post_id).first()
+            return tuple(row) if row else None
         finally:
             db.close()

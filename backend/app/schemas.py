@@ -106,8 +106,8 @@ class CommentBase(BaseModel):
         if not v:
             raise ValueError('Комментарий не может быть пустым.')
 
-        if len(v) < 3:
-            raise ValueError('Комментарий должен быть не менее 3 символов.')
+        # if len(v) < 3:
+        #     raise ValueError('Комментарий должен быть не менее 3 символов.')
 
         return v
 

@@ -18,13 +18,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if __name__ == "__main__":
+@app.on_event("startup")
+def _startup():
     init_database()
-    
-    app.include_router(auth_router)
-    app.include_router(posts_router)
-    app.include_router(comments_router)
-    app.include_router(likes_router)
-    
+
+app.include_router(auth_router)
+app.include_router(posts_router)
+app.include_router(comments_router)
+app.include_router(likes_router)
+
+if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="localhost", port=8000)

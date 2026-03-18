@@ -92,7 +92,7 @@ class CommentRepository:
                 Comment.user_id,
                 Comment.created_at,
                 Comment.updated_at,
-                User.login.label("author_name")
+                User.name.label("author_name")
             ).join(User, Comment.user_id == User.id).filter(
                 Comment.post_id == post_id
             ).order_by(Comment.created_at.desc()).offset(offset).limit(page_size)
@@ -125,7 +125,7 @@ class CommentRepository:
                 Comment.user_id,
                 Comment.created_at,
                 Comment.updated_at,
-                User.login.label("author_name"),
+                User.name.label("author_name"),
             ).join(User, Comment.user_id == User.id).filter(Comment.id == comment_id).first()
             return tuple(row) if row else None
         finally:

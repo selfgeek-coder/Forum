@@ -135,3 +135,44 @@ class PostService:
                 "has_prev": page > 1
             }
         }
+
+    def get_post(self, post_id: int, current_user_id: int | None = None):
+        """Получить один пост по ID (публично, is_liked — если авторизован)."""
+        row = self.post_repository.get_post_details(post_id)
+        if not row:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={
+                    "error": "POST_NOT_FOUND",
+                    "message": "Пост не найден"
+                }
+            )
+
+        (
+            pid,
+            title,
+            content,
+            created_at,
+            author_name,
+            author_id,
+            likes_count,
+            comments_count,
+        ) = row
+
+        is_liked = False
+        if current_user_id is not None:
+            liked = self.post_repository.get_user_liked_post_ids(current_user_id, [pid])
+            is_liked = pid in liked
+
+        return {
+            "id": pid,
+            "title": title,
+            "content": content,
+            "created_at": created_at,
+            "author": author_name,
+            "author_id": author_id,
+            "likes_count": likes_count,
+            "comments_count": comments_count,
+            "is_liked": is_liked,
+            "comments": []
+        }
