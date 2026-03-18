@@ -1,0 +1,42 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #4a90e2;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo {
+  font-size: 1.5em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-user {
+  font-weight: bold;
+}
+
+.header-logout,
+.header-login {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: white;
+  color: #4a90e2;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.header-logout:hover,
+.header-login:hover {
+  background-color: #e6e6e6;
+}

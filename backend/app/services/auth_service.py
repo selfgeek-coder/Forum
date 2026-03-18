@@ -51,13 +51,12 @@ class AuthService:
             )
 
             return {
-                "token": access_token,
+                "access_token": access_token,
                 "token_type": "bearer",
-                "user": {
-                    "id": user_id,
-                    "name": login,
-                    "email": email
-                }
+                "user_id": user_id,
+                "login": login,
+                "email": email,
+                "name": name
             }
 
         except HTTPException:
@@ -106,13 +105,12 @@ class AuthService:
                 )
 
                 return {
-                    "token": access_token,
+                    "access_token": access_token,
                     "token_type": "bearer",
-                    "user": {
-                        "id": user_id,
-                        "name": login,
-                        "email": email
-                    }
+                    "user_id": user_id,
+                    "login": login,
+                    "email": email,
+                    "name": login
                 }
 
             except VerifyMismatchError:

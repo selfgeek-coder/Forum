@@ -1,0 +1,45 @@
+.news-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.action-btn.liked {
+  background: #ffebee;
+  border-color: #ffcdd2;
+}
+
+.comments-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #eee;
+}
+
+.comment-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.comment-item {
+  font-size: 0.9em;
+  margin-bottom: 8px;
+  background: #f9f9f9;
+  padding: 8px;
+  border-radius: 4px;
+}

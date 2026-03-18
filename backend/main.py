@@ -9,6 +9,15 @@ from app.db.database import init_database
 
 app = FastAPI(title="Social Network API")
 
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Vite dev server & production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 if __name__ == "__main__":
     init_database()
     
