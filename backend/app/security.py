@@ -49,6 +49,17 @@ def verify_token(authorization: str = Header(None)):
         raise HTTPException(status_code=401, detail="Token verification failed")
 
 
+def create_refresh_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    
+    if expires_delta is None:
+        expires_delta = timedelta(days=25)
+        
+    expire = datetime.utcnow() + expires_delta
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
+    return encoded_jwt
+
 def verify_token_optional(authorization: str = Header(None)):
     """
     Мягкая проверка токена: возвращает payload или None.
